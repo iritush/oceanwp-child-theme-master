@@ -256,7 +256,7 @@ function pw_rcp_save_user_fields_on_profile_save( $user_id ) {
 	}
 	if( ! empty( $_POST['rcp_phone_number'] ) ) {
 		update_user_meta( $user_id, 'rcp_phone_number', sanitize_text_field( $_POST['rcp_phone_number'] ) );
-	}	
+	}
 }
 add_action( 'rcp_user_profile_updated', 'pw_rcp_save_user_fields_on_profile_save', 10 );
 add_action( 'rcp_edit_member', 'pw_rcp_save_user_fields_on_profile_save', 10 );
@@ -293,6 +293,9 @@ function pw_rcp_register_export_columns( $columns ) {
 	$columns[ 'zipcode' ] = 'zipcode';
 	$columns[ 'country' ] = 'Country';
 	$columns[ 'phone_number' ] = 'Phone Number';
+	$columns[ 'secondary_member' ] = 'Secondary Member';
+	$columns[ 'secondary_email' ] = 'Secondary Email';
+	$columns[ 'join_date' ] = 'Join Date';
 
 	return $columns; 
 }
@@ -319,7 +322,10 @@ function pw_rcp_add_fields_to_export( $data, $membership ) {
 	$data[ 'state' ] = get_user_meta( $user_id, 'rcp_state', true );
 	$data[ 'zipcode' ] = get_user_meta( $user_id, 'rcp_zipcode', true );
 	$data[ 'country' ] = get_user_meta( $user_id, 'rcp_country', true );
-	$data[ 'phone_number' ] = get_user_meta( $user_id, 'rcp_phone_number', true );	
+	$data[ 'phone_number' ] = get_user_meta( $user_id, 'rcp_phone_number', true );
+	$data[ 'secondary_member' ] = get_user_meta( $user_id, 'rcp_secondary_member', true );	
+	$data[ 'secondary_email' ] = get_user_meta( $user_id, 'rcp_secondary_email', true );
+	$data[ 'join_date' ] = get_user_meta( $user_id, 'rcp_join_date', true );
 
 	/*
 	 * This example is for including membership meta data.
@@ -330,3 +336,97 @@ function pw_rcp_add_fields_to_export( $data, $membership ) {
 
 }
 add_filter( 'rcp_export_memberships_get_data_row', 'pw_rcp_add_fields_to_export', 10, 2 );
+
+/**
+ * Import custom user fields.
+ *
+ * @param RCP_Membership $membership Newly created/updated membership object.
+ * @param WP_User        $user       User associated with the membership.
+ * @param array          $row        Array of data in the current CSV row.
+ */
+function ag_rcp_import_custom_fields( $membership, $user, $row ) {
+
+	$street_line_1 = $row['rcp_street_line_1'];
+
+	if ( ! empty( $street_line_1 ) ) {
+		update_user_meta( $user->ID, 'rcp_street_line_1', sanitize_text_field( $street_line_1 ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_street_line_1', sanitize_text_field( $street_line_1 ) );
+	}
+
+	$street_line_2 = $row['rcp_street_line_2']; 
+
+	if ( ! empty( $street_line_2 ) ) {
+		update_user_meta( $user->ID, 'rcp_street_line_2', sanitize_text_field( $street_line_2 ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_street_line_2', sanitize_text_field( $street_line_2 ) );
+	}
+
+	$city = $row['rcp_city']; 
+
+	if ( ! empty( $city ) ) {
+		update_user_meta( $user->ID, 'rcp_city', sanitize_text_field( $city ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_city', sanitize_text_field( $city ) );
+	}
+
+	$state = $row['rcp_state']; 
+
+	if ( ! empty( $state ) ) {
+		update_user_meta( $user->ID, 'rcp_state', sanitize_text_field( $state ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_state', sanitize_text_field( $state ) );
+	}
+
+	$zipcode = $row['rcp_zipcode']; 
+
+	if ( ! empty( $zipcode ) ) {
+		update_user_meta( $user->ID, 'rcp_zipcode', sanitize_text_field( $zipcode ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_zipcode', sanitize_text_field( $zipcode ) );
+	}
+	
+	$country = $row['rcp_country']; 
+
+	if ( ! empty( $country ) ) {
+		update_user_meta( $user->ID, 'rcp_country', sanitize_text_field( $country ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_country', sanitize_text_field( $country ) );
+	}
+
+	$phone_number = $row['rcp_phone_number']; 
+
+	if ( ! empty( $phone_number ) ) {
+		update_user_meta( $user->ID, 'rcp_phone_number', sanitize_text_field( $phone_number ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_phone_number', sanitize_text_field( $phone_number ) );
+	}
+
+	$secondary_member = $row['rcp_secondary_member']; 
+
+	if ( ! empty( $secondary_member ) ) {
+		update_user_meta( $user->ID, 'rcp_secondary_member', sanitize_text_field( $secondary_member ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_secondary_member', sanitize_text_field( $secondary_member ) );
+	}
+
+	$secondary_email = $row['rcp_secondary_email']; 
+
+	if ( ! empty( $secondary_email ) ) {
+		update_user_meta( $user->ID, 'rcp_secondary_email', sanitize_text_field( $secondary_email ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_secondary_email', sanitize_text_field( $secondary_email ) );
+	}
+
+	$legacy_member_id = $row['rcp_legacy_member_id']; 
+
+	if ( ! empty( $legacy_member_id ) ) {
+		update_user_meta( $user->ID, 'rcp_legacy_member_id', sanitize_text_field( $legacy_member_id ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_legacy_member_id', sanitize_text_field( $legacy_member_id ) );
+	}
+
+	$join_date = $row['rcp_join_date'];
+
+	if ( ! empty( $join_date ) ) {
+		update_user_meta( $user->ID, 'rcp_join_date', sanitize_text_field( $join_date ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_join_date', sanitize_text_field( $join_date ) );
+	}
+	$legacy_user_id = $row['rcp_251_legacy_user_id'];
+
+	if ( ! empty( $legacy_user_id ) ) {
+		update_user_meta( $user->ID, 'rcp_251_legacy_user_id', sanitize_text_field( $legacy_user_id ) );
+		rcp_update_membership_meta( $membership->get_id(), 'rcp_251_legacy_user_id', sanitize_text_field( $legacy_user_id ) );
+	}
+}
+add_action( 'rcp_csv_import_membership_processed', 'ag_rcp_import_custom_fields', 10, 3 );
