@@ -227,9 +227,6 @@ function pw_rcp_validate_user_fields_on_register( $posted ) {
 	if( empty( $posted['rcp_phone_number'] ) ) {
 		rcp_errors()->add( 'invalid_phone_number', __( 'Please enter your phone number', 'rcp' ), 'register' );
 	}
-	if( empty( $posted['rcp_secondary_member'] ) ) {
-		rcp_errors()->add( 'invalid_secondary_member', __( 'Please enter your secondary member name', 'rcp' ), 'register' );
-	}
 	if ( ! empty( $posted['rcp_secondary_email'] ) && ! is_email( $posted['rcp_secondary_email'] ) ) {
         rcp_errors()->add( 'invalid_email_address', __( 'Please enter a valid  email address', 'rcp' ), 'register' );
     }
