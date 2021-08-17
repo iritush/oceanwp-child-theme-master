@@ -49,6 +49,8 @@ function pw_rcp_add_user_fields() {
 	$zipcode = get_user_meta( get_current_user_id(), 'rcp_zipcode', true );
 	$country = get_user_meta( get_current_user_id(), 'rcp_country', true );
 	$phone_number = get_user_meta( get_current_user_id(), 'rcp_phone_number', true );
+	$secondary_member = get_user_meta( get_current_user_id(), 'rcp_secondary_member', true );
+	$secondary_email = get_user_meta( get_current_user_id(), 'rcp_secondary_email', true );
 
 	?>
 	<p>
@@ -79,7 +81,15 @@ function pw_rcp_add_user_fields() {
 		<p>
 		<label for="rcp_phone_number"><?php _e( 'Your Phone Number', 'rcp' ); ?></label>
 		<input name="rcp_phone_number" id="rcp_phone_number" type="number" value="<?php echo esc_attr( $phone_number ); ?>"/> 
-	</p>	
+	</p>
+	<p>
+		<label for="rcp_secondary_member"><?php _e( 'Secondary Member Name', 'rcp' ); ?></label>
+		<input name="rcp_secondary_member" id="rcp_secondary_member" type="text" value="<?php echo esc_attr( $secondary_member ); ?>"/> 
+	</p>
+	<p>
+        <label for="rcp_secondary_email"><?php _e( 'Secondary Member Email', 'rcp' ); ?></label>
+        <input type="email" id="rcp_secondary_email" name="rcp_secondary_email" value="<?php echo esc_attr( $secondary_email ); ?>"/>
+    </p>
 	<?php
 }
 add_action( 'rcp_before_register_form_fields', 'resigtration_form_intro' );
@@ -100,6 +110,8 @@ function pw_rcp_add_member_edit_fields( $user_id = 0 ) {
 	$zipcode = get_user_meta( $user_id, 'rcp_zipcode', true );
 	$country = get_user_meta( $user_id, 'rcp_country', true );
 	$phone_number = get_user_meta( $user_id, 'rcp_phone_number', true );
+	$secondary_member = rget_user_meta( $user_id, 'rcp_secondary_member', true );
+	$secondary_email = rget_user_meta( $user_id, 'rcp_secondary_email', true );
 
 	?>
 	<tr valign="top">
@@ -164,7 +176,25 @@ function pw_rcp_add_member_edit_fields( $user_id = 0 ) {
 			<input name="rcp_phone_number" id="rcp_phone_number" type="number" value="<?php echo esc_attr( $phone_number ); ?>"/>
 			<p class="description"><?php _e( 'The member\'s phone number', 'rcp' ); ?></p>
 		</td>
-	</tr>			
+	</tr>
+	<tr valign="top">
+		<th scope="row" valign="top">
+			<label for="rcp_secondary_member"><?php _e( 'Secondary Member', 'rcp' ); ?></label>
+		</th>
+		<td>
+			<input name="rcp_secondary_member" id="rcp_secondary_member" type="text" value="<?php echo esc_attr( $secondary_member ); ?>"/>
+			<p class="description"><?php _e( 'The member\'s secondary member', 'rcp' ); ?></p>
+		</td>
+	</tr>
+	<tr valign="top">
+        <th scope="row" valign="top">
+            <label for="rcp_secondary_email"><?php _e( 'Secondary Email', 'rcp' ); ?></label>
+        </th>
+        <td>
+            <input type="email" id="rcp_secondary_email" name="rcp_secondary_email" value="<?php echo esc_attr( $secondary_email ); ?>"/>
+        </td>
+    </tr>
+	
 <?php	
 }
 add_action( 'rcp_edit_member_after', 'pw_rcp_add_member_edit_fields' );
@@ -196,7 +226,13 @@ function pw_rcp_validate_user_fields_on_register( $posted ) {
 	}
 	if( empty( $posted['rcp_phone_number'] ) ) {
 		rcp_errors()->add( 'invalid_phone_number', __( 'Please enter your phone number', 'rcp' ), 'register' );
-	}	
+	}
+	if( empty( $posted['rcp_secondary_member'] ) ) {
+		rcp_errors()->add( 'invalid_secondary_member', __( 'Please enter your secondary member name', 'rcp' ), 'register' );
+	}
+	if ( ! empty( $posted['rcp_secondary_email'] ) && ! is_email( $posted['rcp_secondary_email'] ) ) {
+        rcp_errors()->add( 'invalid_email_address', __( 'Please enter a valid  email address', 'rcp' ), 'register' );
+    }
 }
 add_action( 'rcp_form_errors', 'pw_rcp_validate_user_fields_on_register', 10 );
 
@@ -226,7 +262,13 @@ function pw_rcp_save_user_fields_on_register( $posted, $user_id ) {
 	}
 	if( ! empty( $posted['rcp_phone_number'] ) ) {
 		update_user_meta( $user_id, 'rcp_phone_number', absint( $posted['rcp_phone_number'] ) );
-	}		
+	}
+	if( ! empty( $posted['rcp_secondary_member'] ) ) {
+		update_user_meta( $user_id, 'rcp_secondary_member', sanitize_text_field( $posted['rcp_secondary_member'] ) );
+	}
+	if ( ! empty( $posted['rcp_secondary_email'] ) ) {
+        update_user_meta( $user_id, 'rcp_secondary_email', sanitize_email( $posted['rcp_secondary_email'] ) );
+    }
 }
 add_action( 'rcp_form_processing', 'pw_rcp_save_user_fields_on_register', 10, 2 );
 
@@ -255,8 +297,14 @@ function pw_rcp_save_user_fields_on_profile_save( $user_id ) {
 		update_user_meta( $user_id, 'rcp_country', sanitize_text_field( $_POST['rcp_country'] ) );
 	}
 	if( ! empty( $_POST['rcp_phone_number'] ) ) {
-		update_user_meta( $user_id, 'rcp_phone_number', sanitize_text_field( $_POST['rcp_phone_number'] ) );
+		update_user_meta( $user_id, 'rcp_phone_number', absint( $_POST['rcp_phone_number'] ) );
 	}
+	if( ! empty( $_POST['rcp_secondary_member'] ) ) {
+		update_user_meta( $user_id, 'rcp_secondary_member', sanitize_text_field( $_POST['rcp_secondary_member'] ) );
+	}
+	if ( ! empty( $_POST['rcp_secondary_email'] ) && is_email( $_POST['rcp_secondary_email'] ) ) {
+        update_user_meta( $user_id, 'rcp_secondary_email', sanitize_email( $_POST['rcp_secondary_email'] ) );
+    }
 }
 add_action( 'rcp_user_profile_updated', 'pw_rcp_save_user_fields_on_profile_save', 10 );
 add_action( 'rcp_edit_member', 'pw_rcp_save_user_fields_on_profile_save', 10 );
