@@ -15,6 +15,16 @@ $key = 'geocode_' . $map_location_field;
 $vermont_center_latlng = '44.000000,  -72.699997';
 $center = $vermont_center_latlng;
 
+if ( ! empty( $center ) ) {
+
+	if ( wp_script_is( 'google-places-api', 'registered' ) ) {
+
+		wp_enqueue_script( 'google-places-api' );
+		wp_print_scripts( 'google-places-api' );
+
+	}	
+}
+
 $locations_array = [];
 $i = 0;
 $towns_visited = xprofile_get_field_data('Towns Visited'); 
@@ -33,16 +43,6 @@ foreach($towns_visited as $town){
 	}
 	$i++;
 } 
-
-if ( ! empty( $center ) ) {
-
-	if ( wp_script_is( 'google-places-api', 'registered' ) ) {
-
-		wp_enqueue_script( 'google-places-api' );
-		wp_print_scripts( 'google-places-api' );
-
-	}
-}
 
 ?>
 
