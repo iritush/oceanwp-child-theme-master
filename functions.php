@@ -475,3 +475,14 @@ function ag_rcp_import_custom_fields( $membership, $user, $row ) {
 	}
 }
 add_action( 'rcp_csv_import_membership_processed', 'ag_rcp_import_custom_fields', 10, 3 );
+
+/***
+ * redirect to home page after logout
+ */
+
+add_action('wp_logout','ps_redirect_after_logout');
+function ps_redirect_after_logout(){
+	$site_url = get_site_url();
+	wp_redirect( $site_url );
+	exit();
+}
