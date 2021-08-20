@@ -110,8 +110,8 @@ function pw_rcp_add_member_edit_fields( $user_id = 0 ) {
 	$zipcode = get_user_meta( $user_id, 'rcp_zipcode', true );
 	$country = get_user_meta( $user_id, 'rcp_country', true );
 	$phone_number = get_user_meta( $user_id, 'rcp_phone_number', true );
-	$secondary_member = rget_user_meta( $user_id, 'rcp_secondary_member', true );
-	$secondary_email = rget_user_meta( $user_id, 'rcp_secondary_email', true );
+	$secondary_member = get_user_meta( $user_id, 'rcp_secondary_member', true );
+	$secondary_email = get_user_meta( $user_id, 'rcp_secondary_email', true );
 
 	?>
 	<tr valign="top">
