@@ -249,7 +249,7 @@ function pw_rcp_save_user_fields_on_register( $posted, $user_id ) {
 		update_user_meta( $user_id, 'rcp_city', sanitize_text_field( $posted['rcp_city'] ) );
 	}
 	if( ! empty( $posted['rcp_state'] ) ) {
-		update_user_meta( $user_id, 'rcp_state', sanitize_text_field( $posted['rcp_strercp_stateet_line_2'] ) );
+		update_user_meta( $user_id, 'rcp_state', sanitize_text_field( $posted['rcp_state'] ) );
 	}
 	if( ! empty( $posted['rcp_zipcode'] ) ) {
 		update_user_meta( $user_id, 'rcp_zipcode', absint( $posted['rcp_zipcode'] ) );
@@ -278,9 +278,8 @@ function pw_rcp_save_user_fields_on_profile_save( $user_id ) {
 	if( ! empty( $_POST['rcp_street_line_1'] ) ) {
 		update_user_meta( $user_id, 'rcp_street_line_1', sanitize_text_field( $_POST['rcp_street_line_1'] ) );
 	}
-	if( ! empty( $_POST['rcp_street_line_2'] ) ) {
+	// field is not required so empty field is OK
 		update_user_meta( $user_id, 'rcp_street_line_2', sanitize_text_field( $_POST['rcp_street_line_2'] ) );
-	}
 	if( ! empty( $_POST['rcp_city'] ) ) {
 		update_user_meta( $user_id, 'rcp_city', sanitize_text_field( $_POST['rcp_city'] ) );
 	}
@@ -296,12 +295,15 @@ function pw_rcp_save_user_fields_on_profile_save( $user_id ) {
 	if( ! empty( $_POST['rcp_phone_number'] ) ) {
 		update_user_meta( $user_id, 'rcp_phone_number', absint( $_POST['rcp_phone_number'] ) );
 	}
-	if( ! empty( $_POST['rcp_secondary_member'] ) ) {
-		update_user_meta( $user_id, 'rcp_secondary_member', sanitize_text_field( $_POST['rcp_secondary_member'] ) );
-	}
+	// field is not required so empty field is OK
+	update_user_meta( $user_id, 'rcp_secondary_member', sanitize_text_field( $_POST['rcp_secondary_member'] ) );
 	if ( ! empty( $_POST['rcp_secondary_email'] ) && is_email( $_POST['rcp_secondary_email'] ) ) {
         update_user_meta( $user_id, 'rcp_secondary_email', sanitize_email( $_POST['rcp_secondary_email'] ) );
     }
+	// field is not required so empty field is OK
+	else {
+		update_user_meta( $user_id, 'rcp_secondary_email', sanitize_text_field( $_POST['rcp_secondary_email'] ) );
+	}
 }
 add_action( 'rcp_user_profile_updated', 'pw_rcp_save_user_fields_on_profile_save', 10 );
 add_action( 'rcp_edit_member', 'pw_rcp_save_user_fields_on_profile_save', 10 );
