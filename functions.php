@@ -477,6 +477,8 @@ function ag_rcp_import_custom_fields( $membership, $user, $row ) {
 	}
 }
 add_action( 'rcp_csv_import_membership_processed', 'ag_rcp_import_custom_fields', 10, 3 );
+// allow renewal of inactive memberships (such as legacy membership types REGULAR and PLUS)
+add_filter( 'rcp_can_renew_deactivated_membership_levels', '__return_true' );
 
 /***
  * redirect to home page after logout
