@@ -1,22 +1,23 @@
 <?php
 /**
- * Registration Form
+ * Registration Form - Single
  *
- * This template is used to display the registration form with [register_form] If the `id` attribute
- * is passed into the shortcode then register-single.php is used instead.
+ * This template is used to display the registration form for a single
+ * membership level with [register_form id="3"]
  * @link http://docs.restrictcontentpro.com/article/1597-registerform
  *
  * For modifying this template, please see: http://docs.restrictcontentpro.com/article/1738-template-files
  *
  * @package     Restrict Content Pro
- * @subpackage  Templates/Register
+ * @subpackage  Templates/Register/Single
  * @copyright   Copyright (c) 2017, Restrict Content Pro
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  */
 
-global $rcp_options, $post, $rcp_levels_db, $rcp_register_form_atts;
-$discount = ! empty( $_REQUEST['discount'] ) ? sanitize_text_field( $_REQUEST['discount'] ) : '';
+global $rcp_options, $rcp_level, $post, $rcp_register_form_atts;
 
+$level = rcp_get_membership_level( $rcp_level );
+$discount = ! empty( $_REQUEST['discount'] ) ? sanitize_text_field( $_REQUEST['discount'] ) : '';
 ?>
 
 <?php if( ! is_user_logged_in() ) { ?>
@@ -33,6 +34,8 @@ $discount = ! empty( $_REQUEST['discount'] ) ? sanitize_text_field( $_REQUEST['d
 rcp_show_error_messages( 'register' ); ?>
 
 <form id="rcp_registration_form" class="rcp_form" method="POST" action="<?php echo esc_url( rcp_get_current_url() ); ?>">
+
+	<div class="rcp_description"><?php echo wpautop( wptexturize( $level->get_description() ) ); ?></div>
 
 	<?php if( ! is_user_logged_in() ) { ?>
 
@@ -75,39 +78,7 @@ rcp_show_error_messages( 'register' ); ?>
 
 	<?php do_action( 'rcp_before_subscription_form_fields' ); ?>
 
-	<fieldset class="rcp_subscription_fieldset">
-	<?php
-	$levels = rcp_get_membership_levels( array( 'status' => 'active', 'number' => 100 ) );
-	$i      = 0;
-	if( $levels ) : ?>
-		<?php if ( count( $levels ) > 1 ) : ?>
-			<p class="rcp_subscription_message"><?php echo apply_filters ( 'rcp_registration_choose_subscription', __( 'Choose your membership level', 'rcp' ) ); ?></p>
-		<?php endif; ?>
-		<ul id="rcp_subscription_levels">
-			<?php foreach( $levels as $key => $level ) : ?>
-				<?php if( rcp_show_subscription_level( $level->get_id() ) ) : ?>
-				<li class="rcp_subscription_level rcp_subscription_level_<?php echo esc_attr( $level->get_id() ); ?>">
-					<input type="radio" id="rcp_subscription_level_<?php echo esc_attr( $level->get_id() ); ?>" class="required rcp_level" <?php if ( $i == 0 || ( isset( $_GET['level'] ) && $_GET['level'] == $level->get_id() ) ) { echo 'checked="checked"'; } ?> name="rcp_level" rel="<?php echo esc_attr( $level->get_price() ); ?>" value="<?php echo esc_attr( $level->get_id() ); ?>" <?php if( $level->is_lifetime() ) { echo 'data-duration="forever"'; } if ( $level->has_trial() ) { echo 'data-has-trial="true"'; } ?>/>
-					<label for="rcp_subscription_level_<?php echo esc_attr( $level->get_id() ); ?>">
-						<span class="rcp_subscription_level_name"><?php echo esc_html( $level->get_name() ); ?></span><span class="rcp_separator">&nbsp;-&nbsp;</span><span class="rcp_price" rel="<?php echo esc_attr( $level->get_price() ); ?>"><?php echo ! $level->is_free() ? rcp_currency_filter( $level->get_price() ) : __( 'free', 'rcp' ); ?></span><span class="rcp_separator">&nbsp;-&nbsp;</span>
-						<span class="rcp_level_duration"><?php echo ! $level->is_lifetime() ? $level->get_duration() . '&nbsp;' . rcp_filter_duration_unit( $level->get_duration_unit(), $level->get_duration() ) : __( 'unlimited', 'rcp' ); ?></span>
-						<?php if ( $level->get_maximum_renewals() > 0 ) : ?>
-							<span class="rcp_separator">&nbsp;-&nbsp;</span>
-							<span class="rcp_level_bill_times"><?php printf( __( '%d total payments', 'rcp' ), $level->get_maximum_renewals() + 1 ); ?></span>
-						<?php endif; ?>
-						<div class="rcp_level_description"> <?php echo $level->get_description(); ?></div>
-					</label>
-
-				</li>
-				<?php $i++; endif; ?>
-			<?php endforeach; ?>
-		</ul>
-	<?php else : ?>
-		<p><strong><?php _e( 'You have not created any membership levels yet', 'rcp' ); ?></strong></p>
-	<?php endif; ?>
-	</fieldset>
-
-	<?php if( rcp_has_discounts() ) : ?>
+	<?php if( rcp_has_discounts() && ! $level->is_free() ) : ?>
 	<fieldset class="rcp_discounts_fieldset">
 		<p id="rcp_discount_code_wrap">
 			<label for="rcp_discount_code">
@@ -123,39 +94,43 @@ rcp_show_error_messages( 'register' ); ?>
 	</fieldset>
 	<?php endif; ?>
 
-	<?php do_action( 'rcp_after_register_form_fields', $levels ); ?>
+	<?php do_action( 'rcp_after_register_form_fields' ); ?>
 
-	<div class="rcp_gateway_fields">
-		<?php
-		$gateways = rcp_get_enabled_payment_gateways();
-		if( count( $gateways ) > 1 ) :
-			$display = rcp_has_paid_levels() ? '' : ' style="display: none;"';
-			$i = 1;
-			?>
-			<fieldset class="rcp_gateways_fieldset">
-				<legend><?php _e( 'Choose Your Payment Method', 'rcp' ); ?></legend>
-				<p id="rcp_payment_gateways"<?php echo $display; ?>>
-					<?php foreach( $gateways as $key => $gateway ) :
-						$recurring = rcp_gateway_supports( $key, 'recurring' ) ? 'yes' : 'no';
-						$trial    = rcp_gateway_supports( $key, 'trial' ) ? 'yes' : 'no'; ?>
-						<label for="rcp_gateway_<?php echo esc_attr( $key ); ?>" class="rcp_gateway_option_label">
-							<input id="rcp_gateway_<?php echo esc_attr( $key );?>" name="rcp_gateway" type="radio" class="rcp_gateway_option_input" value="<?php echo esc_attr( $key ); ?>" data-supports-recurring="<?php echo esc_attr( $recurring ); ?>" data-supports-trial="<?php echo esc_attr( $trial ); ?>" <?php checked( $i, 1 ); ?>>
-							<?php echo esc_html( $gateway ); ?>
-						</label>
-					<?php
-					$i++;
-					endforeach; ?>
-				</p>
-			</fieldset>
-		<?php else: ?>
-			<?php foreach( $gateways as $key => $gateway ) :
-				$recurring = rcp_gateway_supports( $key, 'recurring' ) ? 'yes' : 'no';
-				$trial = rcp_gateway_supports( $key, 'trial' ) ? 'yes' : 'no';
+	<?php if( ! $level->is_free() ) : ?>
+
+		<div class="rcp_gateway_fields">
+			<?php
+			$gateways = rcp_get_enabled_payment_gateways();
+			if( count( $gateways ) > 1 ) :
+				$display = rcp_has_paid_levels() ? '' : ' style="display: none;"';
+				$i = 1;
 				?>
-				<input type="hidden" name="rcp_gateway" value="<?php echo esc_attr( $key ); ?>" data-supports-recurring="<?php echo esc_attr( $recurring ); ?>" data-supports-trial="<?php echo esc_attr( $trial ); ?>"/>
-			<?php endforeach; ?>
-		<?php endif; ?>
-	</div>
+				<fieldset class="rcp_gateways_fieldset">
+					<legend><?php _e( 'Choose Your Payment Method', 'rcp' ); ?></legend>
+					<p id="rcp_payment_gateways"<?php echo $display; ?>>
+						<?php foreach( $gateways as $key => $gateway ) :
+							$recurring = rcp_gateway_supports( $key, 'recurring' ) ? 'yes' : 'no';
+							$trial    = rcp_gateway_supports( $key, 'trial' ) ? 'yes' : 'no'; ?>
+							<label class="rcp_gateway_option_label">
+								<input name="rcp_gateway" type="radio" class="rcp_gateway_option_input" value="<?php echo esc_attr( $key ); ?>" data-supports-recurring="<?php echo esc_attr( $recurring ); ?>" data-supports-trial="<?php echo esc_attr( $trial ); ?>" <?php checked( $i, 1 ); ?>>
+								<?php echo esc_html( $gateway ); ?>
+							</label>
+						<?php
+						$i++;
+						endforeach; ?>
+					</p>
+				</fieldset>
+			<?php else: ?>
+				<?php foreach( $gateways as $key => $gateway ) :
+					$recurring = rcp_gateway_supports( $key, 'recurring' ) ? 'yes' : 'no';
+					$trial = rcp_gateway_supports( $key, 'trial' ) ? 'yes' : 'no';
+					?>
+					<input type="hidden" name="rcp_gateway" value="<?php echo esc_attr( $key ); ?>" data-supports-recurring="<?php echo esc_attr( $recurring ); ?>" data-supports-trial="<?php echo esc_attr( $trial ); ?>"/>
+				<?php endforeach; ?>
+			<?php endif; ?>
+		</div>
+
+	<?php endif; ?>
 
 	<?php if ( ! empty( $rcp_options['enable_terms'] ) ) : ?>
 		<fieldset class="rcp_agree_to_terms_fieldset">
@@ -207,13 +182,14 @@ rcp_show_error_messages( 'register' ); ?>
 		</fieldset>
 	<?php endif; ?>
 
-	<?php do_action( 'rcp_before_registration_submit_field', $levels ); ?>
+	<?php do_action( 'rcp_before_registration_submit_field' ); ?>
 
 	<?php if ( ! empty( $_GET['rcp_redirect'] ) ) : ?>
 		<input type="hidden" name="rcp_redirect" value="<?php echo esc_url( $_GET[ 'rcp_redirect' ] ) ?>"/>
 	<?php endif; ?>
 
 	<p id="rcp_submit_wrap">
+		<input type="hidden" name="rcp_level" class="rcp_level" value="<?php echo esc_attr( $level->get_id() ); ?>" rel="<?php echo esc_attr( $level->get_price() ); ?>" <?php if ( $level->has_trial() ) { echo 'data-has-trial="true"'; } ?> />
 		<input type="hidden" name="rcp_register_nonce" value="<?php echo wp_create_nonce('rcp-register-nonce' ); ?>"/>
 		<input type="submit" name="rcp_submit_registration" id="rcp_submit" class="rcp-button" value="<?php esc_attr_e( apply_filters ( 'rcp_registration_register_button', __( 'Register', 'rcp' ) ) ); ?>"/>
 	</p>
