@@ -141,12 +141,8 @@ if ( ! empty( $memberships ) ) {
 							$links[] = '<a href="' . esc_url( add_query_arg( 'membership_id', urlencode( $membership->get_id() ), get_permalink( $rcp_options['update_card'] ) ) ) . '" title="' . esc_attr__( 'Update payment method', 'rcp' ) . '" class="rcp_sub_details_update_card">' . __( 'Update payment method', 'rcp' ) . '</a>';
 						}
 
-						if ( $membership->can_renew() ) {
-							$links[] = apply_filters( 'rcp_subscription_details_action_renew', '<a href="' . esc_url( rcp_get_membership_renewal_url( $membership->get_id() ) ) . '" title="' . esc_attr__( 'Renew your existing membership', 'rcp' ) . '" class="rcp_sub_details_renew">' . __( 'Renew your membership', 'rcp' ) . '</a>', $user_ID );
-						}
-
-						if ( $membership->upgrade_possible() ) {
-							$links[] = apply_filters( 'rcp_subscription_details_action_upgrade', '<a href="' . esc_url( rcp_get_membership_upgrade_url( $membership->get_id() ) ) . '" title="' . esc_attr__( 'Upgrade or change your membership', 'rcp' ) . '" class="rcp_sub_details_change_membership">' . __( 'Renew your membership for a different time period', 'rcp' ) . '</a>', $user_ID );
+						if ( $membership->can_renew() || $membership->upgrade_possible()) {							
+							$links[] = apply_filters( 'rcp_subscription_details_action_renew', '<a href="' . esc_url( rcp_get_registration_page_url() ) . '" title="' . esc_attr__( 'Renew your existing membership', 'rcp' ) . '" class="rcp_sub_details_renew">' . __( 'Renew your membership', 'rcp' ) . '</a>', $user_ID );
 						}
 
 						if ( $membership->is_active() && $membership->can_cancel() && ! $membership->has_payment_plan() ) {
