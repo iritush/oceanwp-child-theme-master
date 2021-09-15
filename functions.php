@@ -493,12 +493,53 @@ function rcp_credit_signup_fee_on_upgrade( $registration ) {
 	}
 
 	add_filter( 'rcp_apply_signup_fee_to_registration', false );
+	add_filter( 'rcp_membership_calculated_expiration_date', 'ag_rcp_end_of_month_expiration', 10, 3 );
 }
 
 add_action( 'rcp_registration_init', 'rcp_credit_signup_fee_on_upgrade' );
 
-// allow renewal of inactive memberships (such as legacy membership types REGULAR and PLUS)
-// add_filter( 'rcp_can_renew_deactivated_membership_levels', '__return_true');
+/**
+ * Plugin Name: Restrict Content Pro - End-of-Month Expiration Dates
+ * Description: Forces expiration dates to always be set to the end of the month.
+ * Version: 1.0
+ * Author: Sandhills Development, LLC
+ * Author URI: https://sandhillsdev.com
+ * License: GPL2
+ */
+
+/**
+ * Forces expiration dates to always be set to the end of the month.
+ *
+ * NOTE: Changing the calculated expiration date does not change the renewal date
+ * with the gateway, so using this alongside automatic renewals is not recommended.
+ *
+ * @param string     $expiration Calculated expiration date in MySQL format or 'none'.
+ * @param int        $user_id    ID of the user the expiration date is being calculated for.
+ * @param RCP_Member $member     Member object.
+ *
+ * @return string Modified expiration date.
+ */
+function ag_rcp_end_of_month_expiration( $expiration, $user_id, $member ) {
+	// Don't make any changes if the expiration date is 'none'.
+	if ( 'none' == $expiration ) {
+		return $expiration;
+		
+	}
+	/**
+	 * Example #1: End of month based on already calculated expiration
+	 *
+	 * This example forces the expiration date to use the end of *calculated* month.
+	 * So if a user signs up for a one-month subscription on July 15th 2017, the regular
+	 * expiration date would be August 15th 2017, and this snippet would change that to
+	 * August 31st 2017.
+	 */
+	return date( 'Y-m-t 23:59:59', strtotime( $expiration ) );
+
+}
+// for renewals
+add_filter( 'rcp_membership_calculated_expiration_date', 'ag_rcp_end_of_month_expiration', 10, 3 );
+// for signups and upgrades
+add_filter( 'rcp_calculate_membership_level_expiration', 'ag_rcp_end_of_month_expiration', 10, 3 );
 
 /***
  * redirect to home page after logout
