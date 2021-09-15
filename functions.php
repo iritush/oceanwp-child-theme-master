@@ -487,36 +487,18 @@ add_action( 'rcp_csv_import_membership_processed', 'ag_rcp_import_custom_fields'
  * @return void
  */
 function rcp_credit_signup_fee_on_upgrade( $registration ) {
-	// If this isn't an upgrade, don't show the message.
+	
 	if ( ! in_array( $registration->get_registration_type(), array( 'upgrade', 'downgrade' ) ) ) {
-		return;
+			return;
 	}
-	// @todo: get the signup fee from the database $signup_fee = $registration->get_membership_level_id()->get_signup_fees();
-	$signup_fee = 10;
 
-	$registration->add_fee( -1 * $signup_fee, __( 'Signup Fee Refund', 'rcp' ), false, true );
-
-	rcp_log( sprintf( 'Adding %.2f proration credits to registration for user #%d.', $signup_fee, get_current_user_id() ) );
+	add_filter( 'rcp_apply_signup_fee_to_registration', false );
 }
+
 add_action( 'rcp_registration_init', 'rcp_credit_signup_fee_on_upgrade' );
 
-/**
- * Add message to checkout specifying proration credit
- *
- * @since 2.5
- * @return void
- */
-function rcp_change_prorate_message() {
-
-	$prorate_message = sprintf( '<p>%s</p>', __( 'Your membership will be prorated up to %s for the first payment. Prorated prices are shown below.', 'rcp' ) );
-
-	return $prorate_message;
-}
-
-add_filter( 'rcp_registration_prorate_message', 'rcp_change_prorate_message' );
-
 // allow renewal of inactive memberships (such as legacy membership types REGULAR and PLUS)
-add_filter( 'rcp_can_renew_deactivated_membership_levels', '__return_true');
+// add_filter( 'rcp_can_renew_deactivated_membership_levels', '__return_true');
 
 /***
  * redirect to home page after logout
