@@ -479,25 +479,49 @@ function ag_rcp_import_custom_fields( $membership, $user, $row ) {
 }
 add_action( 'rcp_csv_import_membership_processed', 'ag_rcp_import_custom_fields', 10, 3 );
 
+// /**
+//  * Credit signup fee on membership upgrade
+//  *
+//  * @param RCP_Registration $registration
+//  *
+//  * @return void
+//  */
+// function rcp_credit_signup_fee_on_upgrade( $registration ) {
+	
+// 	if ( ! in_array( $registration->get_registration_type(), array( 'upgrade', 'downgrade' ) ) ) {
+// 			return;
+// 	}
+
+// 	// $signup_fee = 0;
+// 	// return $signup_fee;
+// 	add_filter( 'rcp_apply_signup_fee_to_registration', false, 10 );
+// }
+
+// add_action( 'rcp_registration_init', 'rcp_credit_signup_fee_on_upgrade');
+
 /**
- * Credit signup fee on membership upgrade
+ * Add prorate credit to member registration
  *
  * @param RCP_Registration $registration
  *
+ * @since 2.5
  * @return void
  */
-function rcp_credit_signup_fee_on_upgrade( $registration ) {
+function rcp_add_prorate_signup_fee( $registration ) {
 	
 	if ( ! in_array( $registration->get_registration_type(), array( 'upgrade', 'downgrade' ) ) ) {
-			return;
+		return;
 	}
 
-	add_filter( 'rcp_apply_signup_fee_to_registration', false );
-	add_filter( 'rcp_membership_calculated_expiration_date', 'ag_rcp_end_of_month_expiration', 10, 3 );
+	$signup_fee = $registration->get_signup_fees();
+
+	$registration->add_fee( -1 * $signup_fee, __( 'Returning Member Discount', 'rcp' ), false, true );
+
+	rcp_log( sprintf( 'Adding %.2f proration credits to registration for user #%d.', $signup_fee, get_current_user_id() ) );
 }
 
-add_action( 'rcp_registration_init', 'rcp_credit_signup_fee_on_upgrade' );
-
+add_action( 'rcp_registration_init', 'rcp_add_prorate_signup_fee' );
+// add_filter( 'rcp_apply_signup_fee_to_registration', 'rcp_credit_signup_fee_on_upgrade' );
 /**
  * Plugin Name: Restrict Content Pro - End-of-Month Expiration Dates
  * Description: Forces expiration dates to always be set to the end of the month.
@@ -533,7 +557,8 @@ function ag_rcp_end_of_month_expiration( $expiration, $user_id, $member ) {
 	 * expiration date would be August 15th 2017, and this snippet would change that to
 	 * August 31st 2017.
 	 */
-	return date( 'Y-m-t 23:59:59', strtotime( $expiration ) );
+	$new_expiration_date = date( 'Y-m-t 23:59:59', strtotime( $expiration ) );
+	return $new_expiration_date;
 
 }
 // for renewals
