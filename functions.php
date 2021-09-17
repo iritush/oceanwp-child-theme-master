@@ -344,6 +344,8 @@ function pw_rcp_register_export_columns( $columns ) {
 	$columns[ 'secondary_member' ] = 'Secondary Member';
 	$columns[ 'secondary_email' ] = 'Secondary Email';
 	$columns[ 'join_date' ] = 'Join Date';
+	$columns[ 'legacy_member_id' ] = 'Legacy Member ID';
+	$columns[ 'rcp_251_legacy_user_id' ] = 'Legacy User ID';
 
 	return $columns; 
 }
@@ -374,6 +376,8 @@ function pw_rcp_add_fields_to_export( $data, $membership ) {
 	$data[ 'secondary_member' ] = get_user_meta( $user_id, 'rcp_secondary_member', true );	
 	$data[ 'secondary_email' ] = get_user_meta( $user_id, 'rcp_secondary_email', true );
 	$data[ 'join_date' ] = get_user_meta( $user_id, 'rcp_join_date', true );
+	$data[ 'legacy_member_id' ] = get_user_meta( $user_id, 'rcp_legacy_member_id', true );
+	$data[ 'rcp_251_legacy_user_id' ] = get_user_meta( $user_id, 'rcp_251_legacy_user_id', true );
 
 	/*
 	 * This example is for including membership meta data.
