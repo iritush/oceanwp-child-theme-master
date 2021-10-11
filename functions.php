@@ -580,3 +580,34 @@ function ps_redirect_after_logout(){
 	wp_redirect( $site_url );
 	exit();
 }
+function fs_leaflet_loaded() {
+	$towns_visited_array = [];
+	$i = 0;
+	$towns_visited = xprofile_get_field_data('Towns Visited'); 
+	foreach($towns_visited as $town){
+		$towns_info = get_posts(array(
+			'numberposts'	=> 1,
+			'post_type'		=> 'town',
+			'fields' => 'ids',
+			'meta_key'		=> 'town_name',
+			'meta_value'	=> $town
+		));
+		foreach ($towns_info as $town_info) {
+			$lat = get_field('latitude', $town_info );
+			$lon = get_field('longitude', $town_info );
+			$towns_visited_array[$i]['lat']= $lat;
+			$towns_visited_array[$i]['lon']= $lon;
+		}
+		$i++;
+	} 
+	wp_enqueue_script('full_screen_leaflet', 'https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js', Array('wp_leaflet_map'), '1.0', true);
+  	wp_enqueue_style('full_screen_leaflet_styles', 'https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css');
+
+	wp_enqueue_script('member_map_js', get_theme_file_uri( '/js/member-map.js', Array('wp_leaflet_map'), '1.0', true ));
+
+	$data_to_send = array(
+	'towns_visited_array' => $towns_visited_array,
+	);
+	wp_add_inline_script( 'member_map_js', 'var data_to_send = ' . wp_json_encode( $data_to_send ), 'before' );
+}
+add_action('leaflet_map_loaded', 'fs_leaflet_loaded');
