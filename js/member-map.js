@@ -279,8 +279,8 @@
           function style(feature) {
             return {
               weight: 2,
-              color: '#00a261',
-              fillColor: '#92d1b4'
+              color: '#241e20',
+              fillColor: 'white'
             };
           }
 
@@ -288,7 +288,7 @@
             var layer = e.target;
             layer.setStyle({
               weight: 5,
-              color: '#00a261',
+              color: '#241e20',
               dashArray: '',
               fillOpacity: 0.7
             });
@@ -332,8 +332,8 @@
             L.circleMarker([towns_visited_array[j]['lat'],towns_visited_array[j]['lon']], {
               "radius": 4,
               "fill": "true",
-              "fillColor": '#241e20',
-              "color": '#241e20',
+              "fillColor": '#00a261',
+              "color": '#00a261',
               "fillOpacity": 0.8
               }).addTo(map);
           }
