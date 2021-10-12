@@ -303,7 +303,7 @@
           }
 
           function click_action (e) {
-            // TBD
+
           }
           var geojson;
 
@@ -327,13 +327,13 @@
           }).addTo(map);
 
           map.attributionControl.addAttribution('<a href="https://vcgi.vermont.gov/" title="Vermont Center for Geographic Information">VCGI</a>');
-          
+
           for (var j = 0, len = towns_visited_array.length; j < len; j++) {
             L.circleMarker([towns_visited_array[j]['lat'],towns_visited_array[j]['lon']], {
               "radius": 4,
               "fill": "true",
-              "fillColor": '#00a261',
-              "color": '#00a261',
+              "fillColor": '#241e20',
+              "color": '#241e20',
               "fillOpacity": 0.8
               }).addTo(map);
           }
