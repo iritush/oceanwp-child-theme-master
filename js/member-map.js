@@ -340,6 +340,9 @@
             addedCircleMarker.on('mouseover',function (e) {
               this.openPopup();
             });
+            addedCircleMarker.on('mouseout',function (e) {
+              this.closePopup();
+            });
           }
         });
       }
