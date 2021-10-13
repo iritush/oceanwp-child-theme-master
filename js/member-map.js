@@ -335,11 +335,11 @@
               "fillColor": '#00a261',
               "color": '#00a261',
               "fillOpacity": 0.8
-              }).bindPopup(towns_visited_array[j]['town'], {closeButton: false, offset: L.point(0, -20)});
+              }).bindPopup(towns_visited_array[j]['town'], {closeButton: false});
             addedCircleMarker.addTo(map);
             addedCircleMarker.on('mouseover',function (e) {
-  this.openPopup();
-});
+              this.openPopup();
+            });
           }
         });
       }
