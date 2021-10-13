@@ -329,13 +329,17 @@
           map.attributionControl.addAttribution('<a href="https://vcgi.vermont.gov/" title="Vermont Center for Geographic Information">VCGI</a>');
 
           for (var j = 0, len = towns_visited_array.length; j < len; j++) {
-            L.circleMarker([towns_visited_array[j]['lat'],towns_visited_array[j]['lon']], {
-              "radius": 4,
+            addedCircleMarker = new L.circleMarker([towns_visited_array[j]['lat'],towns_visited_array[j]['lon']], {
+              "radius": 3,
               "fill": "true",
               "fillColor": '#00a261',
               "color": '#00a261',
               "fillOpacity": 0.8
-              }).addTo(map);
+              }).bindPopup(towns_visited_array[j]['town'], {closeButton: false, offset: L.point(0, -20)});
+            addedCircleMarker.addTo(map);
+            addedCircleMarker.on('mouseover',function (e) {
+  this.openPopup();
+});
           }
         });
       }
