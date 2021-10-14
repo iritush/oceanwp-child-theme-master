@@ -335,7 +335,7 @@
               "fillColor": '#00a261',
               "color": '#00a261',
               "fillOpacity": 0.8
-              }).bindPopup(towns_visited_array[j]['town'], {closeButton: false});
+              }).bindPopup(towns_visited_array[j]['town'], {closeButton: false, offset: new L.Point(10, 10)},);
             addedCircleMarker.addTo(map);
             addedCircleMarker.on('mouseover',function (e) {
               this.openPopup();
