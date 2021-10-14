@@ -274,7 +274,6 @@
         var map = maps[i];
         map.whenReady(function () {
           this.addControl(new L.Control.Fullscreen());
-          this.dragging.disable()
 
           function style(feature) {
             return {
@@ -293,7 +292,7 @@
               fillOpacity: 0.7
             });
             if (layer.feature.properties.TOWNNAME) {
-              layer.bindPopup(layer.feature.properties.TOWNNAME, {closeButton: false, offset: L.point(0, -20)});
+              layer.bindPopup(layer.feature.properties.TOWNNAME, {closeButton: false, offset: L.point(10, 10)});
               layer.openPopup();
             }
             
@@ -330,19 +329,13 @@
 
           for (var j = 0, len = towns_visited_array.length; j < len; j++) {
             addedCircleMarker = new L.circleMarker([towns_visited_array[j]['lat'],towns_visited_array[j]['lon']], {
-              "radius": 3,
+              "radius": 2.5,
               "fill": "true",
               "fillColor": '#00a261',
               "color": '#00a261',
               "fillOpacity": 0.8
-              }).bindPopup(towns_visited_array[j]['town'], {closeButton: false, offset: new L.Point(10, 10)},);
+              })
             addedCircleMarker.addTo(map);
-            addedCircleMarker.on('mouseover',function (e) {
-              this.openPopup();
-            });
-            addedCircleMarker.on('mouseout',function (e) {
-              this.closePopup();
-            });
           }
         });
       }
