@@ -611,3 +611,34 @@ function fs_leaflet_loaded() {
 	wp_add_inline_script( 'member_map_js', 'var data_to_send = ' . wp_json_encode( $data_to_send ), 'before' );
 }
 add_action('leaflet_map_loaded', 'fs_leaflet_loaded');
+
+/**
+ * Disable Widgets Settings.
+ */
+function yzc_disable_widgets_settings( $is_current_component, $component) {
+    if ( $component =='widgets' ) {
+        return false;
+    }
+    return $is_current_component;
+}
+
+add_filter( 'bp_is_current_component', 'yzc_disable_widgets_settings', 10, 2 );
+
+/**
+ * Remove Widgets Settings from Account Menu.
+ */
+function yzc_remove_widgets_settings_account_menu( $menu ) {
+    unset($menu['widgets'] );
+    return $menu;
+}
+
+add_filter( 'youzify_account_page_main_menu', 'yzc_remove_widgets_settings_account_menu' );
+
+/**
+ * Set Change avatar as default page for the profile settings  
+ */
+function yz_set_profile_change_avatar_as_default_nav( $default_tab ) {
+    return 'change-avatar';
+}
+add_filter( 'youzify_profile_settings_default_tab', 'yz_set_profile_change_avatar_as_default_nav' );
+add_filter( 'youzify_display_user_profile_quick_menu', '__return_false' );
