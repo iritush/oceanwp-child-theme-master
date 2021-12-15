@@ -43,16 +43,7 @@ $is_my_profile = bp_is_my_profile();
 
             <div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 
-                <div class="author-box">
-                    <?php echo get_avatar( get_the_author_meta( 'user_email' ), '50' ); ?>
-                    <p><?php printf( _x( 'by %s', 'Post written by...', 'buddyblog' ), bp_core_get_userlink( $post->post_author ) ); ?></p>
-
-                    <?php if ( is_sticky() ) : ?>
-                        <span class="activity sticky-post"><?php _ex( 'Featured', 'Sticky post', 'buddyblog' ); ?></span>
-                    <?php endif; ?>
-                </div>
-
-                <div class="post-content">
+                <div class="youzify-post-content">
                     
                     <?php if ( function_exists( 'has_post_thumbnail' ) && has_post_thumbnail( get_the_ID() ) ):?>
                         
@@ -61,30 +52,14 @@ $is_my_profile = bp_is_my_profile();
                         </div>
 
                     <?php endif;?>
-
-                    <h2 class="posttitle"> <a href="<?php the_permalink(); ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'buddyblog' ); ?> <?php the_title_attribute(); ?>"><?php the_title(); ?></a> </h2>
-
-                    <p class="date"><?php printf( __( '%1$s <span>in %2$s</span>', 'buddyblog' ), get_the_date(), get_the_category_list( ', ' ) ); ?></p>
-
-                    <div class="entry">
-
-                        <?php the_content( __( 'Read the rest of this entry &rarr;', 'buddyblog' ) ); ?>
-                        <?php wp_link_pages( array( 'before' => '<div class="page-link"><p>' . __( 'Pages: ', 'buddyblog' ), 'after' => '</p></div>', 'next_or_number' => 'number' ) ); ?>
-                    </div>
-
-                    <p class="postmetadata"><?php the_tags( '<span class="tags">' . __( 'Tags: ', 'buddyblog' ), ', ', '</span>' ); ?> <span class="comments"><?php comments_popup_link( __( 'No Comments &#187;', 'buddyblog' ), __( '1 Comment &#187;', 'buddyblog' ), __( '% Comments &#187;', 'buddyblog' ) ); ?></span></p>
-
-                    <div class="post-actions">
-                        <?php echo buddyblog_get_post_publish_unpublish_link( get_the_ID() );?>
-                        <?php echo buddyblog_get_edit_link();?>
-                        <?php echo buddyblog_get_delete_link();?>
-                    </div>     
+                    <h2 class="youzify-post-title"> <a href="<?php the_permalink(); ?>" rel="bookmark" title="<?php _e( 'Permanent Link to', 'buddyblog' ); ?> <?php the_title_attribute(); ?>"><?php the_title(); ?></a> </h2>
+    
                 </div>
 
 			</div>
                    
         <?php endwhile;?>
-            <div class="pagination">
+            <div class="youzify-pagination">
                 <?php buddyblog_paginate(); ?>
             </div>
     <?php else: ?>
